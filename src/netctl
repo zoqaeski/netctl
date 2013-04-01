@@ -110,10 +110,9 @@ unit_enable() {
     echo -e "\n[Unit]" >> "$unit"
     [[ -n $Description ]] && echo "Description=$Description" >> "$unit"
     if [[ -n ${BindsToInterfaces=$Interface} ]]; then
-        : ${InterfaceRoot=sys/subsystem/net/devices/}
-        printf "BindsTo=$(sd_escape "$InterfaceRoot")%s.device\n" \
+        printf 'BindsTo=sys-subsystem-net-devices-%s.device\n' \
                $(sd_escape "${BindsToInterfaces[@]}") >> "$unit"
-        printf "After=$(sd_escape "$InterfaceRoot")%s.device\n" \
+        printf 'After=sys-subsystem-net-devices-%s.device\n' \
                $(sd_escape "${BindsToInterfaces[@]}") >> "$unit"
     fi
     if [[ -n $After ]]; then
