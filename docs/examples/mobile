@@ -1,6 +1,6 @@
 Description='Example PPP mobile connection'
 Interface=ppp0
-Connection=ppp
+Connection=mobile
 Peer=mobile-broadband
 IdleTimeout=30
 
@@ -26,7 +26,7 @@ ConnectionMode='persist'
 #Password='very secret'
 
 # The access point name you are connecting to
-AccessPointName=iinet
+AccessPointName=apn
 
 # If your device has a PIN code, set it here. Defaults to None
 #Pin=None
