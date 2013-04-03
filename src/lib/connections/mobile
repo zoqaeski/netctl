@@ -140,7 +140,7 @@ mobile_down() {
     local chat
     cfg="$STATE_DIR/mobile.${Interface}.${Profile}/options"
     chat="$STATE_DIR/mobile.${Interface}.${Profile}/modem.chat"
-    PIDFILE="/var/run/mobile-${Profile}.pid"
+    PIDFILE="/var/run/ppp-${Profile}.pid"
 
     if [[ -e $PIDFILE ]]; then
         read PID < "$PIDFILE"
