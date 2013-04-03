@@ -35,3 +35,4 @@ AccessPointName=apn
 # These only work for Huawei USB modems; all other devices should use None
 Mode=3Gpref
 
+# vim:ft=dosini

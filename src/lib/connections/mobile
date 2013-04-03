@@ -28,14 +28,16 @@ mobile_up() {
         echo "ttyUSB0" >> "${cfg}"
     fi
 
-    echo "921600" >> "${cfg}"
-    echo "lock" >> "${cfg}"
-    echo "crtscts" >> "${cfg}"
-    echo "modem" >> "${cfg}"
-    echo "passive" >> "${cfg}"
-    echo "novj" >> "${cfg}"
-    echo "holdoff 10" >> "${cfg}"
-    echo "maxfail 5" >> "${cfg}"
+    cat >> "${cfg}" << EOF
+921600
+lock
+crtscts
+modem
+passive
+novj
+holdoff 10
+maxfail 5
+EOF
 
     # Debug pppd output separately from netcfg
     if is_yes "${PPPDebug:-yes}"; then
@@ -59,20 +61,22 @@ mobile_up() {
     [[ -n ${Password} ]] && echo "password $(_quotestring "${Password}")" >> "${cfg}"
 
     # Now that we’ve got the ppp configuration set up, write the chat script
-    echo "ECHO ON" >> "${chat}"
-    echo "ABORT 'BUSY'" >> "${chat}"
-    echo "ABORT 'NO CARRIER'" >> "${chat}"
-    echo "ABORT 'VOICE'" >> "${chat}"
-    echo "ABORT 'NO DIALTONE'" >> "${chat}"
-    echo "ABORT 'NO DIAL TONE'" >> "${chat}"
-    echo "ABORT 'NO ANSWER'" >> "${chat}"
-    echo "ABORT 'DELAYED'" >> "${chat}"
-    echo "ABORT   '\nRINGING\r\n\r\nRINGING\r'" >> "${chat}"
-    echo "REPORT CONNECT" >> "${chat}"
-    echo "TIMEOUT 6" >> "${chat}"
-    echo "'' 'ATQ0'" >> "${chat}"
-    echo "'OK-AT-OK' 'ATZ'" >> "${chat}"
-    echo "TIMEOUT 3" >> "${chat}"
+    cat >> "${chat}" << EOF
+ECHO ON
+ABORT 'BUSY'
+ABORT 'NO CARRIER'
+ABORT 'VOICE'
+ABORT 'NO DIALTONE'
+ABORT 'NO DIAL TONE'
+ABORT 'NO ANSWER'
+ABORT 'DELAYED'
+ABORT   '\nRINGING\r\n\r\nRINGING\r'
+REPORT CONNECT
+TIMEOUT 6
+'' 'ATQ0'
+'OK-AT-OK' 'ATZ'
+TIMEOUT 3
+EOF
 
     #echo "'OK' @/etc/ppp/chatscripts/pin" >> "${chat}"
     if [ -n "${Pin}" ]; then
@@ -81,9 +85,11 @@ mobile_up() {
         echo "'OK' 'AT'" >> "${chat}"
     fi
 
-    echo "'OK\d-AT-OK' 'ATI'" >> "${chat}"
-    echo "'OK' 'ATZ'" >> "${chat}"
-    echo "'OK' 'ATQ0 V1 E1 S0=0 &C1 &D2 +FCLASS=0'" >> "${chat}"
+    cat >> "${chat}" << EOF
+'OK\d-AT-OK' 'ATI'
+'OK' 'ATZ'
+'OK' 'ATQ0 V1 E1 S0=0 &C1 &D2 +FCLASS=0'
+EOF
 
     # Mode can be one of 3Gpref, 3Gonly, GPRSpref, GPRSonly, None
     # Only works for Huawei modems
@@ -109,9 +115,11 @@ mobile_up() {
     # Set up Access Point Name
     echo "'OK-AT-OK' AT+CGDCONT=1,\"IP\",\"${AccessPointName}\"" >> "${chat}"
 
-    echo "'OK' 'ATDT*99#'" >> "${chat}"
-    echo "TIMEOUT 30" >> "${chat}"
-    echo "CONNECT ''" >> "${chat}"
+    cat >> "${chat}" << EOF
+'OK' 'ATDT*99#'
+TIMEOUT 30
+CONNECT ''
+EOF
 
     # Add the chat script line to the configuration
     echo "connect \"/usr/sbin/chat -v -t15 -f ${chat}\"" >> "${cfg}"
