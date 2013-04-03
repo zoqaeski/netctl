@@ -19,16 +19,13 @@ mobile_up() {
     : > "${cfg}"
     chmod 600 "${cfg}"
 
+    # Set the interface route
+    InterfaceRoot="dev/"
+
     echo "linkname $(_quotestring "${Profile}")" >> "${cfg}"
 
-    # Set device
-    if [ -n "${Device}" ]; then
-        echo "${Device}" >> "${cfg}"
-    else
-        echo "ttyUSB0" >> "${cfg}"
-    fi
-
     cat >> "${cfg}" << EOF
+${Interface}
 921600
 lock
 crtscts

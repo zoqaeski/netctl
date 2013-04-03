@@ -1,14 +1,10 @@
 Description='Example PPP mobile connection'
-Interface=ppp0
+Interface=ttyUSB0
 Connection=mobile
-Peer=mobile-broadband
 IdleTimeout=30
 
 # Debug pppd / chat output (separately from netctl)
 #PPPDebug=true
-
-# The device will usually be /dev/ttyUSB* (default: ttyUSB0
-Device=ttyUSB0
 
 # Use default route provided by the peer (default: true)
 #DefaultRoute=true
