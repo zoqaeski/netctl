@@ -60,6 +60,35 @@ EOF
     [[ -n ${User} ]] && echo "user $(_quotestring "${User}")" >> "${cfg}"
     [[ -n ${Password} ]] && echo "password $(_quotestring "${Password}")" >> "${cfg}"
 
+    #echo "'OK' @/etc/ppp/chatscripts/pin" >> "${chat}"
+    if [ -n "${Pin}" ]; then
+        PinStr="'OK' 'AT+CPIN=${Pin}'"
+    else
+        PinStr="'OK' 'AT'"
+    fi
+    report_debug echo $PinStr
+
+    # Mode can be one of 3Gpref, 3Gonly, GPRSpref, GPRSonly, None
+    # Only works for Huawei modems
+    #echo "'OK' @/etc/ppp/chatscripts/mode" >> "${chat}"
+    case "${Mode}" in
+        3Gonly)
+            ModeStr="'OK' 'AT\^SYSCFG=14,2,3fffffff,0,1'"
+            ;;
+        3Gpref)
+            ModeStr="'OK' 'AT\^SYSCFG=2,2,3fffffff,0,1'"
+            ;;
+        GPRSonly)
+            ModeStr="'OK' 'AT\^SYSCFG=13,1,3fffffff,0,0'"
+            ;;
+        GPRSpref)
+            ModeStr="'OK' 'AT\^SYSCFG=2,1,3fffffff,0,0'"
+            ;;
+        *)
+            ModeStr="'OK' 'AT'"
+            ;;
+    esac
+
     # Now that we’ve got the ppp configuration set up, write the chat script
     cat >> "${chat}" << EOF
 ECHO ON
@@ -76,46 +105,12 @@ TIMEOUT 6
 '' 'ATQ0'
 'OK-AT-OK' 'ATZ'
 TIMEOUT 3
-EOF
-
-    #echo "'OK' @/etc/ppp/chatscripts/pin" >> "${chat}"
-    if [ -n "${Pin}" ]; then
-        echo "'OK' 'AT+CPIN=${Pin}'" >> "${chat}"
-    else
-        echo "'OK' 'AT'" >> "${chat}"
-    fi
-
-    cat >> "${chat}" << EOF
+${PinStr}
 'OK\d-AT-OK' 'ATI'
 'OK' 'ATZ'
 'OK' 'ATQ0 V1 E1 S0=0 &C1 &D2 +FCLASS=0'
-EOF
-
-    # Mode can be one of 3Gpref, 3Gonly, GPRSpref, GPRSonly, None
-    # Only works for Huawei modems
-    #echo "'OK' @/etc/ppp/chatscripts/mode" >> "${chat}"
-    case "${Mode}" in
-        3Gonly)
-            echo "'OK' 'AT\^SYSCFG=14,2,3fffffff,0,1'" >> "${chat}"
-            ;;
-        3Gpref)
-            echo "'OK' 'AT\^SYSCFG=2,2,3fffffff,0,1'" >> "${chat}"
-            ;;
-        GPRSonly)
-            echo "'OK' 'AT\^SYSCFG=13,1,3fffffff,0,0'" >> "${chat}"
-            ;;
-        GPRSpref)
-            echo "'OK' 'AT\^SYSCFG=2,1,3fffffff,0,0'" >> "${chat}"
-            ;;
-        *)
-            echo "'OK' 'AT'" >> "${chat}"
-            ;;
-    esac
-
-    # Set up Access Point Name
-    echo "'OK-AT-OK' AT+CGDCONT=1,\"IP\",\"${AccessPointName}\"" >> "${chat}"
-
-    cat >> "${chat}" << EOF
+${ModeStr}
+'OK-AT-OK' 'AT+CGDCONT=1,"IP","${AccessPointName}"'
 'OK' 'ATDT*99#'
 TIMEOUT 30
 CONNECT ''
