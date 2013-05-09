@@ -1,5 +1,4 @@
 *.patch
-*.tar
-*.xz
-*.sig
+*.tar.xz
+*.tar.xz.sig
 /PKGBUILD

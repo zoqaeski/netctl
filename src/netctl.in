@@ -100,23 +100,24 @@ switch_to() {
 }
 
 unit_enable() {
-    local unit="/etc/systemd/system/netctl@$(sd_escape "$1").service"
+    local unit="@systemdsystemconfdir@/netctl@$(sd_escape "$1").service"
     if [[ -e $unit ]]; then
         report_error "A unit file for profile '$1' already exists"
         return 1
     fi
     load_profile "$1"
-    echo ".include /usr/lib/systemd/system/netctl@.service" > "$unit"
+    echo ".include @systemdsystemunitdir@/netctl@.service" > "$unit"
     echo -e "\n[Unit]" >> "$unit"
     [[ -n $Description ]] && echo "Description=$Description" >> "$unit"
-    if [[ -n ${BindsToInterfaces=$Interface} ]]; then
+    [[ -v BindsToInterfaces ]] || BindsToInterfaces=$Interface
+    if (( ${#BindsToInterfaces[@]} )); then
         : ${InterfaceRoot=sys/subsystem/net/devices/}
         printf "BindsTo=$(sd_escape "$InterfaceRoot")%s.device\n" \
                $(sd_escape "${BindsToInterfaces[@]}") >> "$unit"
         printf "After=$(sd_escape "$InterfaceRoot")%s.device\n" \
                $(sd_escape "${BindsToInterfaces[@]}") >> "$unit"
     fi
-    if [[ -n $After ]]; then
+    if (( ${#After[@]} )); then
         printf 'After="netctl@%s.service"\n' \
                $(sd_escape "${After[@]}") >> "$unit"
     fi
@@ -126,7 +127,7 @@ unit_enable() {
 }
 
 unit_disable() {
-    local unit="/etc/systemd/system/netctl@$(sd_escape "$1").service"
+    local unit="@systemdsystemconfdir@/netctl@$(sd_escape "$1").service"
     if sd_call "is-enabled --quiet" "$1" &> /dev/null; then
         sd_call disable "$1"
     fi

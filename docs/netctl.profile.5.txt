@@ -176,14 +176,14 @@ of the `ethernet' type:
     acceptable. Defaults to `++no++'.
 
 'Auth8021X='::
-    Set to `++yes++' to use 802.11x authentication.
+    Set to `++yes++' to use 802.1x authentication.
 
 'WPAConfigFile='::
     Path to a *wpa_supplicant* configuration file. Defaults to
     '/etc/wpa_supplicant.conf'.
 
 'WPADriver='::
-    The *wpa_supplicant* driver to use for 802.11x authentication.
+    The *wpa_supplicant* driver to use for 802.1x authentication.
     Defaults to `++wired++'.
 
 'TimeoutCarrier='::
@@ -191,7 +191,7 @@ of the `ethernet' type:
     `++5++'.
 
 'TimeoutWPA='::
-    Maximum time, in seconds, to wait for 802.11x authentication to
+    Maximum time, in seconds, to wait for 802.1x authentication to
     succeed. Defaults to `++15++'.
 
 
@@ -315,13 +315,13 @@ type:
 
 
 OPTIONS FOR `pppoe' CONNECTIONS
-------------------------------
+-------------------------------
 The interface to dial peer-to-peer over ethernet is specified in
 'Interface'. The following options are understood for connections of
 the `pppoe' type:
 
 'User=' and 'Password='::
-    The username and password to connect with. 
+    The username and password to connect with.
 
 'ConnectionMode='::
     This option specifies how a connection should be established, and
@@ -346,20 +346,55 @@ the `pppoe' type:
 The following advanced options are also understood:
 
 'PPPoEService='::
-    This option specifies the PPPoE service name. 
+    This option specifies the PPPoE service name.
+
 'PPPoEAC='::
-    This option specifies the PPPoE access concentrator name. 
+    This option specifies the PPPoE access concentrator name.
+
 'PPPoESession='::
     This option specifies an existing session to attach to, and is of
     the form `sessid:macaddr'.
+
 'PPPoEMAC='::
     Only connect to specified MAC address
+
 'PPPoEIP6='::
     Enable IPv6 support
 
 
+OPTIONS FOR `mobile_ppp' CONNECTIONS
+------------------------------------
+The name of the USB serial device is specified in 'Interface'. The
+following options are understood for connections of the `mobile_ppp'
+type:
+
+'DefaultRoute='::
+    Use the default route provided by the peer (defaults to
+    `true')
+
+'UsePeerDNS='::
+    Use the DNS provided by the peer (defaults to `true')
+
+'User=' and 'Password='::
+    The username and password to connect with. These are unset by
+    default, as they are often not required.
+
+'AccessPointName='::
+    The access point (apn) to connect on. This is specific to your
+    ISP.
+
+'Pin='::
+    If your modem requires a PIN to unlock, use this option.
+
+'Mode='::
+    This option is used to specify the connection mode. Can be one of
+    `3Gpref', `3Gonly', `GPRSpref', `GPRSonly', `None'. This generates
+    AT commands specific to certain Huawei modems; all other devices
+    should use `None'.
+
+
 OPTIONS FOR `tunnel' CONNECTIONS
-----------------------------------
+--------------------------------
 The name of the tunnel interface is specified in 'Interface'. Next to
 the *ip options*, the following are understood for connections of the
 `tunnel' type:
@@ -375,7 +410,7 @@ the *ip options*, the following are understood for connections of the
 
 
 OPTIONS FOR `tuntap' CONNECTIONS
-----------------------------------
+--------------------------------
 The name of the tuntap interface is specified in 'Interface'. Next to
 the *ip options*, the following are understood for connections of the
 `tuntap' type:
